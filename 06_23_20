@@ -1,0 +1,15 @@
+install.packages("dismo")
+install.packages("gbm")
+install.packages("raster")
+library(dismo)     # package to run the model
+library(gbm)       # GBM contains boosted regression tree functions 
+load("~/Downloads/modeldata.RData")
+
+files <- list.files(path=paste(system.file(package="dismo"), "/ex",  sep= ""), pattern= "grd", full.names=TRUE )
+predictors <- stack(files)
+
+#Build initial model
+brt_model <- gbm.step(data=modeldata, gbm.x = 2:10, gbm.y = 1) 
+
+#Make predictions across raster layer
+predictions <- predict(predictors, brt_model, n.trees=brt_model$gbm.call$best.trees, type="response") 
